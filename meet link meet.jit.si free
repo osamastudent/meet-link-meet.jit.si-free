@@ -1,0 +1,27 @@
+public function updateStatus(Request $request, Appointment $appointment)
+            {
+                $status = $request->input('status');
+            
+                if (!in_array($status, ['pending', 'approved', 'completed', 'cancelled'])) {
+                    return back()->with('error', 'Invalid status.');
+                }
+            
+                $appointment->status = $status;
+            
+                if (!$appointment->meeting_link) {
+                $docId = $appointment->doctor_id;
+                $patId = $appointment->patient_id;
+                $appointmentId = $appointment->id;
+            
+                $roomName = 'Dr' . $docId . '_Pat' . $patId . '_App' . $appointmentId;
+            
+                $appointment->meeting_link = 'https://meet.jit.si/' . $roomName
+                    . '#config.prejoinPageEnabled=false&config.requireModerator=false';
+            }
+            
+                
+            
+                $appointment->save();
+            
+                return back()->with('success', 'Appointment status updated successfully!');
+            }
